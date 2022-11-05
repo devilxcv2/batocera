@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export DISPLAY=:0
+
+VGA_DEV=`xrandr | grep -E '^VGA' | sed "s/^\(.*\) .*connected.*/\1/"`
+DEV_CON=`xrandr | grep ' connected ' | sed "s/^\(.*\) connected.*/\1/"`
+
+if [ -z "$VGA_DEV" ]; then
+   echo $DEV_CON
+else
+   echo $VGA_DEV
+fi
+

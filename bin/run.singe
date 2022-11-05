@@ -1,0 +1,6 @@
+#!/bin/sh
+
+ROMNAME=$1
+xrandr --output $(/userdata/retroasd/bin/get_video_output) --mode "3600x480" --transform none
+/usr/bin/hypseus singe vldp -fullscreen -ignore_aspect_ratio -x 3600 -y 480 -original_overlay -blend -noserversend -framefile /userdata/roms/daphne/roms/$ROMNAME/$ROMNAME.txt -script /userdata/roms/daphne/roms/$ROMNAME/$ROMNAME.singe -homedir /userdata/roms/daphne -datadir /userdata/roms/daphne
+xrandr --output $(/userdata/retroasd/bin/get_video_output) --mode "3600x480" --scale-from 400x256

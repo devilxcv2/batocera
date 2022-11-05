@@ -1,0 +1,58 @@
+#!/bin/sh
+
+/usr/bin/xarcade2jstick -s -d >/dev/null 2>&1 &
+/userdata/retroasd/bin/pyJammASD/main.py -c /userdata/retroasd/bin/pyJammASD/batocera.ini >/dev/null 2>&1
+
+GPU=$(lspci | grep VGA | cut -d ":" -f3);
+RACONF="/userdata/system/configs/retroarch/retroarchcustom.cfg"
+
+
+
+sed -i '/global.retroarch.crt_switch_resolution=/d' ${RACONF}
+sed -i '/global.retroarch.crt_switch_resolution_super=/d' ${RACONF}
+sed -i '/global.retroarch.crt_switch_resolution_use_custom_refresh_rate=/d' ${RACONF}
+sed -i '/global.retroarch.crt_video_refresh_rate=/d' ${RACONF}
+sed -i '/global.retroarch.aspect_ratio_index=/d' ${RACONF}
+
+
+if [[ $GPU != *"NVIDIA"* ]]; then
+
+		xrandr --newmode "MODE_1920_240" 37.778 1920 1977 2154 2376 240 243 245 265 -hsync -vsync
+		xrandr --addmode $(/userdata/retroasd/bin/get_video_output) "MODE_1920_240"
+		xrandr --newmode "MODE_2560_256" 52.42 2560 2664 2912 3328 256 257 260 276 -hsync -vsync
+		xrandr --addmode $(/userdata/retroasd/bin/get_video_output) "MODE_2560_256"
+		xrandr --newmode "MODE_1920_256"  39.015450 1920 1998 2181 2493 256 276 279 313   -hsync -vsync
+		xrandr --addmode $(/userdata/retroasd/bin/get_video_output) "MODE_1920_256"
+		xrandr --newmode "MODE_1920_256" 34.47 1920 1900 2100 2276 256 257 260 266 -hsync -vsync
+		xrandr --addmode $(/userdata/retroasd/bin/get_video_output)  "MODE_1920_256"
+		xrandr --newmode "MODE_2560_448" 52.22 2560 2664 2912 3328 448 467 473 523 interlace -hsync -vsync
+		xrandr --addmode $(/userdata/retroasd/bin/get_video_output)  "MODE_2560_448"
+		xrandr --newmode "MODE_1920_480" 73.413510 3600 3747 4092 4679 480 483 489 523 interlace -hsync -vsync
+		xrandr --addmode $(/userdata/retroasd/bin/get_video_output)  "MODE_1920_480"
+		
+		
+		xrandr --output $(/userdata/retroasd/bin/get_video_output) --mode "MODE_1920_480" --scale-from 640x480
+		
+		echo 'global.retroarch.crt_switch_resolution_super = "1920"' >> ${RACONF}
+		echo 'global.retroarch.crt_switch_resolution_use_custom_refresh_rate = "True"' >> ${RACONF}
+		echo 'global.retroarch.crt_video_refresh_rate = "60.000000"' >> ${RACONF}
+		echo 'global.retroarch.aspect_ratio_index = "0"' >> ${RACONF}
+		echo 'global.retroarch.video_aspect_ratio = "-1.000000"' >> ${RACONF}
+		
+		cd /userdata # es needs a PWD
+		openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed  --screensize 640 480 --resolution 640 480"
+
+
+else
+
+		echo 'global.retroarch.crt_switch_resolution = "1"' >> ${RACONF}
+		echo 'global.retroarch.crt_switch_resolution_super = "Native"' >> ${RACONF}
+		
+		xrandr --output $(/userdata/retroasd/bin/get_video_output) --mode "3600x480" --scale-from 640x480
+		
+		cd /userdata # es needs a PWD
+		openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed  --screensize 640 480"
+		
+fi
+		
+		
